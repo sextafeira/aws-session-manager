@@ -21,7 +21,7 @@ resource "aws_iam_role" "session_manager" {
 
 resource "aws_iam_role_policy_attachment" "session_manager" {
   role       = aws_iam_role.session_manager.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  policy_arn = var.ssm_policy_arn
 }
 
 resource "aws_iam_instance_profile" "session_manager" {
