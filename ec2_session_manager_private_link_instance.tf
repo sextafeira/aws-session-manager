@@ -1,10 +1,10 @@
-resource "aws_instance" "main" {
+resource "aws_instance" "ec2_session_manager_private_link" {
   ami                         = data.aws_ssm_parameter.amazon_linux.value
   instance_type               = var.instance_type
   subnet_id                   = data.aws_ssm_parameter.private_subnet_1a.value
   associate_public_ip_address = false
-  vpc_security_group_ids      = [aws_security_group.ec2.id]
-  iam_instance_profile        = aws_iam_instance_profile.session_manager.name
+  vpc_security_group_ids      = [aws_security_group.ec2_session_manager_private_link.id]
+  iam_instance_profile        = aws_iam_instance_profile.ec2_session_manager_private_link.name
 
   # A AMI padrão do Amazon Linux 2023 já inclui o SSM Agent.
   user_data = <<-EOF
@@ -13,11 +13,11 @@ resource "aws_instance" "main" {
   EOF
 
   depends_on = [
-    aws_iam_role_policy_attachment.session_manager,
-    aws_vpc_endpoint.ssm,
-    aws_vpc_endpoint.ssmmessages,
-    aws_vpc_security_group_egress_rule.https,
-    aws_vpc_security_group_ingress_rule.endpoints_https,
+    aws_iam_role_policy_attachment.ec2_session_manager_private_link,
+    aws_vpc_endpoint.ec2_session_manager_private_link_ssm,
+    aws_vpc_endpoint.ec2_session_manager_private_link_ssmmessages,
+    aws_vpc_security_group_egress_rule.ec2_session_manager_private_link_https,
+    aws_vpc_security_group_ingress_rule.ec2_session_manager_private_link_endpoints_https,
   ]
 
   metadata_options {
