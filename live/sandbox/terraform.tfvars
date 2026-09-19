@@ -1,4 +1,3 @@
-project_name_vpc             = "aws-vpc"
 region                       = "us-east-1"
 environment                  = "sandbox"
 project_name_session_manager = "sessionmanager"

@@ -1,4 +1,4 @@
-resource "aws_iam_role" "session_manager" {
+resource "aws_iam_role" "ec2_session_manager_nat_gateway" {
   name = format("%s-nat-gateway", var.project_name_session_manager)
 
   assume_role_policy = jsonencode({
@@ -19,14 +19,14 @@ resource "aws_iam_role" "session_manager" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "session_manager" {
-  role       = aws_iam_role.session_manager.name
+resource "aws_iam_role_policy_attachment" "ec2_session_manager_nat_gateway" {
+  role       = aws_iam_role.ec2_session_manager_nat_gateway.name
   policy_arn = var.ssm_policy_arn
 }
 
-resource "aws_iam_instance_profile" "session_manager" {
+resource "aws_iam_instance_profile" "ec2_session_manager_nat_gateway" {
   name = format("%s-nat-gateway", var.project_name_session_manager)
-  role = aws_iam_role.session_manager.name
+  role = aws_iam_role.ec2_session_manager_nat_gateway.name
 
   tags = {
     Name        = format("%s-session-manager-nat-gateway", var.project_name_session_manager)
