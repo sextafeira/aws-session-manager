@@ -14,7 +14,7 @@ Todos os arquivos `.tf` ficam na raiz e compartilham um único backend, provider
 | Session Manager NAT | Subnet privada A, sem IP público | HTTPS para o Systems Manager |
 | Session Manager PrivateLink | Subnet privada A, sem IP público | HTTPS restrito aos endpoints SSM da VPC |
 
-O projeto `aws-vpc` deve ser aplicado primeiro, na mesma conta e região, para publicar `/aws-vpc/vpc_id`, `/aws-vpc/public_subnet_1a_id` e `/aws-vpc/private_subnet_1a_id`. Os demais IDs das subnets são publicados por ele para outros consumidores.
+O projeto `aws-vpc` deve ser aplicado primeiro, na mesma conta e região, para publicar `/vpc_id`, `/public_subnet_1a_id` e `/private_subnet_1a_id`. Os demais IDs das subnets são publicados por ele para outros consumidores.
 
 ## Aplicar
 
@@ -45,7 +45,7 @@ Também estão disponíveis os IDs e IPs das três instâncias e `ec2_ssh_privat
 
 ## Comportamento dos endpoints
 
-Os endpoints SSM têm DNS privado; portanto, seus nomes resolvem para os endpoints em toda a VPC. A instância chamada “NAT” usa uma subnet com rota NAT e regra de saída HTTPS para a internet, mas, quando os endpoints existem, suas conexões SSM também passam pelo PrivateLink. O grupo de segurança dos endpoints aceita HTTPS dessa instância para mantê-la acessível. Para observar o caminho SSM pelo NAT de fato, é preciso remover ou desabilitar os endpoints de DNS privado em uma configuração separada.
+Os endpoints SSM têm DNS privado; portanto, seus nomes resolvem para os endpoints em toda a VPC. A instância chamada “NAT” usa uma subnet com rota NAT e regra de saída HTTPS para a internet, mas, quando os endpoints existem, suas conexões SSM também são direcionadas ao PrivateLink. O grupo de segurança dos endpoints aceita HTTPS apenas da instância PrivateLink; assim, a instância NAT pode ficar inacessível pelo Session Manager nessa configuração. Para observar o caminho SSM pelo NAT de fato, é preciso remover ou desabilitar os endpoints de DNS privado em uma configuração separada.
 
 A instância PrivateLink só permite saída HTTPS para o grupo de segurança dos endpoints. O SSM Agent já vem na AMI Amazon Linux 2023 e é iniciado pelo `user_data`; pode levar alguns minutos após o apply para ficar online.
 
@@ -53,7 +53,7 @@ A instância PrivateLink só permite saída HTTPS para o grupo de segurança dos
 
 Se a configuração anterior da raiz já foi aplicada, seu estado ainda contém a VPC, subnets, NAT Gateways, rotas e parâmetros SSM. **Não aplique nem destrua este projeto antes de retirar esses recursos do estado antigo e confirmar que a rede está gerenciada pelo estado de `aws-vpc`.** Apagar seus arquivos `.tf` faz o Terraform planejar a destruição de recursos que ainda constem no estado. Faça backup dos estados e use `terraform state list` para comparar os endereços. Migre recursos ainda não gerenciados por `aws-vpc` para o estado desse projeto ou remova do estado antigo apenas os que já estão comprovadamente no estado de `aws-vpc`.
 
-Os parâmetros antigos usavam nomes como `/sessionmanager/aws-vpc/vpc_id`; os novos nomes começam com `/aws-vpc/`. Aplique primeiro `aws-vpc` e confirme que os novos parâmetros existem. Se as instâncias EC2 antigas ainda estiverem em estados separados, migre seus recursos para o estado unificado antes de aplicar aqui; do contrário, o plano tentará criá-las novamente. O arquivo `ec2-ssh.pem` agora é esperado na raiz.
+Os parâmetros antigos usavam nomes como `/sessionmanager/aws-vpc/vpc_id` e `/aws-vpc/vpc_id`; os nomes esperados agora ficam diretamente na raiz, como `/vpc_id`. Aplique primeiro `aws-vpc` e confirme que os novos parâmetros existem. Se as instâncias EC2 antigas ainda estiverem em estados separados, migre seus recursos para o estado unificado antes de aplicar aqui; do contrário, o plano tentará criá-las novamente. O arquivo `ec2-ssh.pem` agora é esperado na raiz.
 
 ## Remoção
 
