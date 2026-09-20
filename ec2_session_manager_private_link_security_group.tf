@@ -35,11 +35,3 @@ resource "aws_vpc_security_group_ingress_rule" "ec2_session_manager_private_link
   to_port                      = 443
   ip_protocol                  = "tcp"
 }
-
-resource "aws_vpc_security_group_ingress_rule" "ec2_session_manager_nat_gateway_endpoints_https" {
-  security_group_id            = aws_security_group.ec2_session_manager_private_link_endpoints.id
-  referenced_security_group_id = aws_security_group.ec2_session_manager_nat_gateway.id
-  from_port                    = 443
-  to_port                      = 443
-  ip_protocol                  = "tcp"
-}
